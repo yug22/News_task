@@ -20,7 +20,26 @@ class _SearchPageState extends State<SearchPage> {
   List filteredNames = [];
 
   _getSearchData() {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async {
+            return false;
+          },
+          child: Container(
+            height: 50,
+            width: 50,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      },
+    );
     apiProvider.everything(todayDate, this).then((response) {
+      Navigator.pop(context);
       var statusCode = ApiProvider.returnResponse(response.statusCode);
       var convertDataToJson = json.decode(response.body);
       var data = convertDataToJson['articles'];
@@ -58,7 +77,10 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void initState() {
-    _getSearchData();
+    Future.delayed(Duration.zero, () {
+      _getSearchData();
+    });
+
     super.initState();
   }
 
@@ -79,6 +101,7 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           children: [
             TextField(
+              autofocus: true,
               controller: _filter,
               style: TextStyle(
                 fontSize: 14,
